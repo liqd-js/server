@@ -1,0 +1,34 @@
+{
+  "name": "@liqd-js/server",
+  "description": "HTTP(S) Server",
+  "version": "0.0.1",
+  "author": "radixxko",
+  "license": "MIT",
+  "main": "lib/server.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "test": "nyc mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/liqd-js/server.git"
+  },
+  "keywords": [
+    "server",
+    "liqd-js",
+    "liqd"
+  ],
+  "dependencies": {
+    "@liqd-js/options": "^1.0.2",
+    "@liqd-js/querystring": "^1.0.0",
+    "@liqd-js/websocket": "^1.0.0"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.5",
+    "mocha": "^5.0.4",
+    "nyc": "^14.1.1"
+  }
+}
