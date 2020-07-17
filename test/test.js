@@ -12,3 +12,8 @@ describe( 'server', done =>
 {
     require( './tests/server' );
 });
+
+describe( 'body', done =>
+{
+    require( './tests/body' );
+});

@@ -17,7 +17,6 @@ it( 'should create Request', done =>
                 path        : '/foo',
                 params      : {},
                 query       : {},
-                body        : undefined,
                 cookies     : {},
                 hostname    : undefined,
                 xhr         : false
@@ -38,7 +37,6 @@ it( 'should create Request', done =>
                 path        : '/foo/bar',
                 params      : {},
                 query       : { foo: 'bar' },
-                body        : undefined,
                 cookies     : { foo: 'bar' },
                 hostname    : 'www.foo.bar',
                 xhr         : false
@@ -60,7 +58,6 @@ it( 'should create Request', done =>
                 path        : '/bar/foo',
                 params      : {},
                 query       : { foo: 'bar', bar: 'foobar' },
-                body        : undefined,
                 cookies     : { foo: 'bar', bar: 'foo' },
                 hostname    : 'www.bar.foo',
                 xhr         : true
@@ -78,7 +75,6 @@ it( 'should create Request', done =>
             path        : req.path,
             params      : req.params,
             query       : req.query,
-            body        : req.body,
             cookies     : req.cookies,
             hostname    : req.hostname,
             xhr         : req.xhr

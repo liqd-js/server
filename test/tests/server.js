@@ -3,6 +3,7 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const fs = require('fs');
+const ReadWriteStream = require('stream').Duplex;
 const assert = require('assert');
 const Server = require('../../lib/server');
 
@@ -14,9 +15,20 @@ function REQ( method, url, data, options = {})
         {
             let body = [];
 
-            res.on( 'data', data => body.push( data ));
-            res.on( 'end', () => resolve( Buffer.concat(body).toString('utf8')));
-            res.on( 'error', reject );
+            //console.log( res.headers );
+
+            if( res.headers.location )
+            {
+                url = url.replace(/^(http[s]?:\/\/[^\/]+).*$/, '$1' + res.headers.location );
+
+                REQ( method, url, data, options = {}).then( resolve );
+            }
+            else
+            {
+                res.on( 'data', data => body.push( data ));
+                res.on( 'end', () => resolve( Buffer.concat(body).toString('utf8')));
+                res.on( 'error', reject );
+            }
         });
 
         req.on( 'error', reject );
@@ -70,8 +82,60 @@ it( 'should create HTTP Server', done =>
         res.end( 'OPTIONS /foo' );
     });
 
+    server.get( '/text', ( req, res, next ) =>
+    {
+        res.reply( 'GET /text' );
+    });
+
+    server.get( '/buffer', ( req, res, next ) =>
+    {
+        res.reply( Buffer.from( 'GET /buffer', 'utf8' ));
+    });
+
+    server.get( '/buffer', ( req, res, next ) =>
+    {
+        res.reply( Buffer.from( 'GET /buffer', 'utf8' ));
+    });
+
+    server.get( '/json', ( req, res, next ) =>
+    {
+        res.reply({ method: 'GET', url: '/json' });
+    });
+
+    server.get( '/stream', ( req, res, next ) =>
+    {
+        let stream = new ReadWriteStream();
+
+        res.reply( stream );
+    });
+
+    server.get( '/cookie', ( req, res, next ) =>
+    {
+        res.cookie( 'foo', 'bar', { maxAge: 1000, domain: 'localhost', path: '/', httpOnly: true, secure: true, sameSite: true, encode: encodeURIComponent });
+
+        res.reply( 'GET /cookie' );
+    });
+
+    server.get( '/delete-cookie', ( req, res, next ) =>
+    {
+        res.cookie( 'foo', '' );
+
+        res.reply( 'GET /delete-cookie' );
+    });
+
+    server.get( '/redirect', ( req, res, next ) =>
+    {
+        res.redirect( '/foo' );
+    });
+
     server.listen( 8080, async() =>
     {
+        let server2 = new Server();
+
+        server2.on( 'error', () => {});
+
+        server2.listen( 8080 );
+
         for( let i = 0; i < 10; ++i )
         {
             assert.equal( await REQ( 'GET', webroot + '/foo' ), 'GET /foo', 'Invalid response' );
@@ -87,6 +151,14 @@ it( 'should create HTTP Server', done =>
             assert.equal( await REQ( 'PATCH', webroot + '/bar' ), 'PATCH /bar', 'Invalid response' );
             assert.equal( await REQ( 'DELETE', webroot + '/bar' ), 'DELETE /bar', 'Invalid response' );
             assert.equal( await REQ( 'OPTIONS', webroot + '/bar' ), 'OPTIONS /bar', 'Invalid response' );
+
+            assert.equal( await REQ( 'GET', webroot + '/text' ), 'GET /text', 'Invalid response' );
+            assert.equal( await REQ( 'GET', webroot + '/buffer' ), 'GET /buffer', 'Invalid response' );
+            assert.equal( await REQ( 'GET', webroot + '/json' ), '{"method":"GET","url":"/json"}', 'Invalid response' );
+            //assert.equal( await REQ( 'GET', webroot + '/stream' ), 'GET /stream', 'Invalid response' );
+
+            assert.equal( await REQ( 'GET', webroot + '/cookie' ), 'GET /cookie', 'Invalid response' );
+            assert.equal( await REQ( 'GET', webroot + '/redirect' ), 'GET /foo', 'Invalid response' );
         }
 
         server.close(() =>
