@@ -1,7 +1,7 @@
 {
   "name": "@liqd-js/server",
   "description": "HTTP(S) Server",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "radixxko",
   "license": "MIT",
   "main": "lib/server.js",
@@ -22,7 +22,7 @@
     "liqd"
   ],
   "dependencies": {
-    "@liqd-js/http-body-parser": "0.0.4",
+    "@liqd-js/http-body-parser": "^0.0.5",
     "@liqd-js/options": "^1.0.2",
     "@liqd-js/querystring": "^1.1.0",
     "@liqd-js/timed-promise": "^1.1.0",
