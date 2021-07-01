@@ -1,7 +1,7 @@
 {
   "name": "@liqd-js/server",
   "description": "HTTP(S) Server",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "radixxko",
   "license": "MIT",
   "main": "lib/server.js",
